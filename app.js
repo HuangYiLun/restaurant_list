@@ -1,8 +1,8 @@
 // require package used in the project
 const express = require('express')
 const exphbs = require('express-handlebars')
-const restaurantList = require('./restaurant.json')
 const mongoose = require('mongoose')
+const Todo = require('./models/todo')
 const app = express()
 const port = 3000
 
@@ -36,8 +36,10 @@ app.use(express.static("public"))
 
 // setting routes
 app.get('/', (req, res) => {
-
-  res.render('index', { restaurants: restaurantList.results })
+  Todo.find()
+      .lean()
+      .then(todos => res.render('index', { todos }))
+      .catch(error => console.error(error))
 })
 
 app.get('/restaurants/:restaurant_id', (req, res) => {
@@ -48,11 +50,11 @@ app.get('/restaurants/:restaurant_id', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-  const keyword = req.query.keyword
-  const restaurants = restaurantList.results.filter(
-    restaurant =>
-      restaurant.name.toLowerCase().includes(keyword.toLowerCase()) || restaurant.category.toLowerCase().includes(keyword.toLowerCase()))
-  res.render('index', { restaurants, keyword })
+  // const keyword = req.query.keyword
+  // const restaurants = restaurantList.results.filter(
+  //   restaurant =>
+  //     restaurant.name.toLowerCase().includes(keyword.toLowerCase()) || restaurant.category.toLowerCase().includes(keyword.toLowerCase()))
+  // res.render('index', { restaurants, keyword })
 })
 
 
