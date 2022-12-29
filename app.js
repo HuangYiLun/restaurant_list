@@ -16,6 +16,7 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
 // setting connection to mongoDB
+mongoose.set('strictQuery', false)
 mongoose.connect(process.env.MONGODB_URI)
 
 // acquire db connection
