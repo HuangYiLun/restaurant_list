@@ -15,7 +15,7 @@
 ## 開始使用
 1. 將專案clone至本機
  ```bash
- git clone https://github.com/yhhuangfrank/Restaurant-project.git
+ git clone https://github.com/HuangYiLun/restaurant_list.git
  ```
 2. 開啟終端機進入資料夾
 3. 安裝npm，輸入：
