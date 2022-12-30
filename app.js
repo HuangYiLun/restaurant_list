@@ -102,9 +102,16 @@ app.post('/restaurants', (req, res) => {
 // edit restaurant detail
 app.put('/restaurants/:restaurant_id', (req, res) => {
   const id = req.params.restaurant_id
-
   return Restaurant.findByIdAndUpdate(id, req.body)
     .then(() => res.redirect(`/restaurants/${id}`))
+    .catch(error => console.error(error))
+})
+
+// delete restaurant
+app.delete('/restaurants/:restaurant_id/delete', (req, res) => {
+  const id = req.params.restaurant_id
+  return Restaurant.findByIdAndDelete(id)
+    .then(() => res.redirect('/'))
     .catch(error => console.error(error))
 })
 
