@@ -3,7 +3,9 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const methodOverride = require('method-override')
 const Restaurant = require('./models/restaurant')
+const restaurant = require('./models/restaurant')
 const app = express()
 const port = 3000
 
@@ -18,6 +20,7 @@ app.set('view engine', 'handlebars')
 
 // setting body-parser
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(methodOverride('_method'))
 
 // setting connection to mongoDB
 mongoose.set('strictQuery', false)
@@ -60,10 +63,22 @@ app.get('/restaurants/:restaurant_id', (req, res) => {
     .catch(error => console.error(error))
 })
 
+// got to edit handlebars
+app.get('/restaurants/:restaurant_id/edit', (req, res) => {
+  const id = req.params.restaurant_id
+  return Restaurant.findById(id)
+    .lean()
+    .then(restaurant => {
+      console.log('id', restaurant._id)
+      res.render('edit', { restaurant })
+    })
+    .catch(error => console.error(error))
+})
+
 // search restuarnats
 app.get('/search', (req, res) => {
   const keyword = req.query.keyword
-  Restaurant.find()
+  return Restaurant.find()
     .lean()
     .then(restaurants => {
       restaurants = restaurants.filter(
@@ -78,9 +93,18 @@ app.get('/search', (req, res) => {
 
 // add a new restaurant
 app.post('/restaurants', (req, res) => {
-  console.log('req.body', req.body)
+  console.log('new', req.body)
   return Restaurant.create(req.body)
     .then(() => res.redirect('/'))
+    .catch(error => console.error(error))
+})
+
+// edit restaurant detail
+app.put('/restaurants/:restaurant_id', (req, res) => {
+  const id = req.params.restaurant_id
+
+  return Restaurant.findByIdAndUpdate(id, req.body)
+    .then(() => res.redirect(`/restaurants/${id}`))
     .catch(error => console.error(error))
 })
 
