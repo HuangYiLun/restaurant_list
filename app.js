@@ -2,7 +2,8 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
-const Todo = require('./models/todo')
+const bodyParser = require('body-parser')
+const Restaurant = require('./models/restaurant')
 const app = express()
 const port = 3000
 
@@ -14,6 +15,9 @@ if (process.env.NODE_ENV !== 'production') {
 // setting template engine
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
+
+// setting body-parser
+app.use(bodyParser.urlencoded({ extended: true }))
 
 // setting connection to mongoDB
 mongoose.set('strictQuery', false)
@@ -33,30 +37,52 @@ db.once('open', () => {
 // setting static files
 app.use(express.static("public"))
 
-
 // setting routes
+// get all restaurants
 app.get('/', (req, res) => {
-  Todo.find()
-      .lean()
-      .then(todos => res.render('index', { todos }))
-      .catch(error => console.error(error))
+  return Restaurant.find()
+    .lean()
+    .then(restaurants => res.render('index', { restaurants }))
+    .catch(error => console.error(error))
 })
 
+// go to new handlebars
+app.get('/restaurants/new', (req, res) => {
+  return res.render('new')
+})
+
+// show restaurant by id
 app.get('/restaurants/:restaurant_id', (req, res) => {
   const id = req.params.restaurant_id
-  const restaurant = restaurantList.results.find(
-    restaurant => restaurant.id.toString() === id)
-  res.render('show', { restaurant })
+  return Restaurant.findById(id)
+    .lean()
+    .then(restaurant => res.render('show', { restaurant }))
+    .catch(error => console.error(error))
 })
 
+// search restuarnats
 app.get('/search', (req, res) => {
-  // const keyword = req.query.keyword
-  // const restaurants = restaurantList.results.filter(
-  //   restaurant =>
-  //     restaurant.name.toLowerCase().includes(keyword.toLowerCase()) || restaurant.category.toLowerCase().includes(keyword.toLowerCase()))
-  // res.render('index', { restaurants, keyword })
+  const keyword = req.query.keyword
+  Restaurant.find()
+    .lean()
+    .then(restaurants => {
+      restaurants = restaurants.filter(
+        restaurant =>
+          restaurant.name.toLowerCase().includes(keyword.toLowerCase()) ||
+          restaurant.category.toLowerCase().includes(keyword.toLowerCase())
+      )
+      res.render('index', { restaurants, keyword })
+    })
+    .catch(error => console.error(error))
 })
 
+// add a new restaurant
+app.post('/restaurants', (req, res) => {
+  console.log('req.body', req.body)
+  return Restaurant.create(req.body)
+    .then(() => res.redirect('/'))
+    .catch(error => console.error(error))
+})
 
 app.listen(port, () => {
   console.log(`Express is listening on http://localhost:${port}`)
