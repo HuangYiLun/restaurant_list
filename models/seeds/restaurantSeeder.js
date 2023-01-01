@@ -1,22 +1,9 @@
-const mongoose = require('mongoose')
+const db = require('../../config/mongoose')
 const Restaurant = require('../restaurant')
 const restaurantJson = require('../../restaurant.json')
 const resturantData = restaurantJson.results
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
-
-mongoose.set('strictQuery', false)
-mongoose.connect(process.env.MONGODB_URI)
-
-const db = mongoose.connection
-
-db.on('error', () => {
-  console.log('mongoDB error!!')
-})
 
 db.once('open', () => {
-  console.log('mongoDB connected!!')
   for (let i = 0; i < resturantData.length; i++) {
     Restaurant.create({
       name: resturantData[i].name,
