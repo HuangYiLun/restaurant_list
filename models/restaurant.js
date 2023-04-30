@@ -43,10 +43,6 @@ const restaurantSchema = new Schema({
     index: true,
     require: true
   },
-  done: {
-    type: Boolean,
-    default: false
-  }
 })
 
 module.exports = mongoose.model('Restaurant', restaurantSchema)

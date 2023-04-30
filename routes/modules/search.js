@@ -4,8 +4,9 @@ const router = express.Router()
 
 // search restuarnats
 router.get('/', (req, res) => {
+  const userId = req.user._id
   const keyword = req.query.keyword
-  return Restaurant.find()
+  return Restaurant.find({ userId })
     .lean()
     .then(restaurants => {
       restaurants = restaurants.filter(
